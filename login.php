@@ -25,9 +25,8 @@
                 if(UserExists($Email,$Password)== "IMA")
                 {
                     // Korisnik postoji sa datom sifrom pa ga mozemo logovati
-                    session_register('aUser');
-                    $aUser = $Name;
-                    
+                    $_SESSION['aUser'] = $Name;
+                                       
                     $link = "<a href='home.php'>ovde</a>";
                     $message = "\nDobro dosli $Name";
                     $message .= "\nVratite se na pocetnu stranu $link"; 

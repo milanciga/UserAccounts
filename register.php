@@ -42,8 +42,7 @@ REGISTER.PHP
                             if($inserted)
                             {
                                 // podaci su uneseni
-                                session_register('aUser');
-                                $aUser = $Name;
+                                $_SESSION['aUser'] = $Name;
                                 
                                 $link = "<a href='home.php'>ovde</a>";
                                 $message = "\nDobro dosli $Name";

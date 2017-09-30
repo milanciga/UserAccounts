@@ -18,13 +18,13 @@
             $link = "";
             
             // Zbog zloupotreba proveravamo $Email i $Password
-            
             if((IsEmail($Email)) && IsPassword($Password))
             {
                 // Podaci su sigurni i pravilno uneti. Mozemo proveriti u bazi
                 if(UserExists($Email,$Password)== "IMA")
                 {
                     // Korisnik postoji sa datom sifrom pa ga mozemo logovati
+                    $Name = GetNameFromEmail($Email);
                     $_SESSION['aUser'] = $Name;
                                        
                     $link = "<a href='home.php'>ovde</a>";

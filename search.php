@@ -2,13 +2,17 @@ SEARCH.PHP
 <?php
     include "validate.inc";
     include "testdb.inc";
+    
     session_start();
+    $aUser = $_SESSION['aUser'];
     
     if(empty($aUser))
     {
         // korisnik nije logovan
         header("Location: home.php");
     }
+    
+    echo "<a href='logout.php'>Izloguj se</a>";
     
     if ($_SERVER["REQUEST_METHOD"] != "POST") 
     {
@@ -23,8 +27,7 @@ SEARCH.PHP
         $link = "";
         
         $match = GetUsers($Criteria);
-        
-        
+                
         if(is_null($match))
         {
             // Doslo je do greske
@@ -43,17 +46,24 @@ SEARCH.PHP
             {
                 // $metch sadzi asocijativan niz u formi $metch['Email']="Name"
                 echo "<br />Pronadjeni su sledeci korisnici: <br /><br />";
-                echo "Email \t\t Ime";
+                
+                echo "<table><tr><th>Email</th><th>Ime</th>";
                 foreach($match as $tmpEmail => $tmpName)
                 {
-                    echo "$tmpEmail \t\t $tmpName";
+                    echo "<tr>";
+                        echo "<td>$tmpEmail</td>";
+                        echo "<td>$tmpName</td>";
+                    echo "</tr>";    
                 }
+                echo "</table>";
                 
                 $link = "<a href='search.php'>ovde</a>";
                 $message = "Zelite da probate opet?. Idite $link";
             }
         }
-        // $
+        
+        echo "<br /><br />".$message;
+        
     }
     
 

@@ -26,8 +26,7 @@ function UserExists($tmpEmail,$tmpPassword){
         $sql = "SELECT * FROM users";
         $sql .=" WHERE (email='$tmpEmail')";
         $sql .=" AND (password='$tmpPassword')";
-        echo "<br/>sql= $sql";
-        
+               
         $result = mysqli_query($con,$sql);
         if($result)
         {   
@@ -60,8 +59,8 @@ function UsernameExists($tmpEmail){
     {
         // Unosimo podatke
         $sql = "SELECT * FROM users";
-        $sql .="WHERE email='$tmpEmail'";
-               
+        $sql .=" WHERE email='$tmpEmail'";
+              
         $result = mysqli_query($con,$sql);
         if($result)
         {   
@@ -95,7 +94,7 @@ function InsertUser($Name,$Email,$Password){
         // Unosimo podatke
         $sql = "INSERT INTO users (email,name,password)";
         $sql .=" VALUES ('$Email','$Name','$Password')";
-        echo "<br/>sql= $sql";
+        
         $result = mysqli_query($con,$sql);
         
         mysqli_close($con);
@@ -118,10 +117,10 @@ function GetUsers($criteria){
     
     if($con = ConnectToTestDB())
     {
-        $sql = "SELECT email, name FROM Users ";
+        $sql = "SELECT email, name FROM users ";
         $sql .= "WHERE (email LIKE '%".$criteria."%')";
-        $sql .= " OR (name LIKE '%".$criteria."%)";
-        
+        $sql .= " OR (name LIKE '%".$criteria."%')";
+                
         $result = mysqli_query($con,$sql);
         
         if($result)
@@ -134,12 +133,38 @@ function GetUsers($criteria){
                 return "empty";
             }
             
-            while ($row = mysql_fetch_assoc($result)) {
+            while ($row = mysqli_fetch_assoc($result)) {
                 $tmpUsers[$row["email"]] = $row["name"];
             }
             mysqli_close($con);
             return $tmpUsers;
             
+        }
+        else
+            return false;
+    }
+    else
+    {
+        // Veza nije uspostavljena
+        return false;
+    }
+}
+
+function GetNameFromEmail($tmpEmail){
+    if($con = ConnectToTestDB())
+    {
+        $sql = "SELECT Name FROM users ";
+        $sql .= "WHERE email='$tmpEmail'";
+        
+        $result = mysqli_query($con,$sql);
+        
+        if($result)
+        {
+            $row = mysqli_fetch_assoc($result);
+            $name = $row['Name'];
+            mysqli_close($con);
+            
+            return $name;
         }
         else
             return false;

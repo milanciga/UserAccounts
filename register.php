@@ -24,6 +24,7 @@ REGISTER.PHP
             $Name = $_POST['frmName'];
             $Email = $_POST['frmEmail'];
             $Password = $_POST['frmPassword'];
+            $cPassword = $_POST['frmPassword_check'];
             
             $message = "";
             $link = "";
@@ -34,35 +35,44 @@ REGISTER.PHP
                 {
                     if(IsPassword($Password))
                     {
-                        if(UsernameExists($Email)== "NEMA")
-                        {    
-                            // Podaci su pravilno uneti pa mozemo registrovati novog korisnika
-                            $inserted = InsertUser($Name, $Email, $Password);
-                            // echo "<br/>inserted=$inserted";
-                            if($inserted)
-                            {
-                                // podaci su uneseni
-                                $_SESSION['aUser'] = $Name;
+                        
+                        if($Password == $cPassword)
+                        {
+                            if(UsernameExists($Email)== "NEMA")
+                            {    
+                                // Podaci su pravilno uneti pa mozemo registrovati novog korisnika
+                                $inserted = InsertUser($Name, $Email, $Password);
                                 
-                                $link = "<a href='home.php'>ovde</a>";
-                                $message = "\nDobro dosli $Name";
-                                $message .= "\nVratite se na pocetnu stranu $link"; 
+                                if($inserted)
+                                {
+                                    // podaci su uneseni
+                                    $_SESSION['aUser'] = $Name;
+                                    
+                                    $link = "<a href='home.php'>ovde</a>";
+                                    $message = "\nDobro dosli $Name";
+                                    $message .= "\nVratite se na pocetnu stranu $link"; 
+                                }
+                                else
+                                {
+                                    // podaci nisu uneti
+                                    $link = "<a href='home.php'>ovde</a>";
+                                    $message = "Doslo je do nekih problema. Probajte opet $link";    
+                                }
                             }
                             else
                             {
-                                // podaci nisu uneti
-                                $link = "<a href='home.php'>ovde</a>";
-                                $message = "Doslo je do nekih problema. Probajte opet $link";    
+                                // Vec postoji korisnik sa takvim imenom
+                                $link = "<a href='register.php'>ovde</a>";
+                                $message = "Vec postoji korisnik sa takvim korisnickim imenom. Probajte opet $link";
                             }
                         }
                         else
                         {
-                            // Vec postoji korisnik sa takvim imenom
-                            $link = "<a href='register.php'>ovde</a>";
-                            $message = "Vec postoji korisnik sa takvim korisnickim imenom. Probajte opet $link";
-                            
-                        }
-                    }
+                            $link = "<a href='home.php'>ovde</a>";
+                            $message = "Uneta lozinka i ponovljena lozinka se ne poklapaju.";
+                            $message .= "<br />Probajte opet $link"; 
+                        }            
+                }
                     else
                     {
                         $link = "<a href='register.php'>ovde</a>";

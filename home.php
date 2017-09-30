@@ -1,12 +1,13 @@
 HOME PAGE
 <?php
-
+    
 /**
  * @author 
  * @copyright 2017
  */
 
     session_start();
+    $aUser = $_SESSION['aUser'];
     
     if(empty($aUser))
     {
@@ -17,6 +18,7 @@ HOME PAGE
     {
         // korisnik je logovan sa korisnickim imenom $aUser
         header("Location: search.php");
+        
     }
 
 ?>

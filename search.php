@@ -1,72 +1,47 @@
 SEARCH.PHP
 <?php
-    include "validate.inc";
-    include "testdb.inc";
+require "users/validate.inc";
+require "users/userdb.inc";
+require "users/usertable.inc";
+
+session_start();
+$aUser = $_SESSION['aUser'];
     
-    session_start();
-    $aUser = $_SESSION['aUser'];
+if (empty($aUser)) {
+    header("Location: home.php");
+}
+    echo "<br />$aUser";
+    echo "<a href='logout.php' style='margin: 0px 15px;'>izloguj se</a><br /><br />";
     
-    if(empty($aUser))
-    {
-        // korisnik nije logovan
-        header("Location: home.php");
-    }
-    
-    echo "<a href='logout.php'>Izloguj se</a>";
-    
-    if ($_SERVER["REQUEST_METHOD"] != "POST") 
-    {
-        // Korisnik je prvi put na stranici, prikazati formu za pretrazivanje
-        include "search_form.html";
-    }
-    else
-    {
-        // Korisnik je uneo parametar za pretragu
-        $Criteria = $_POST['frmCriteria'];
-        $message = "";
-        $link = "";
+if ($_SERVER["REQUEST_METHOD"] != "POST") {
+    include "forms/search_form.html";
+} else {
+    $criteria = $_POST['frmCriteria'];
+    $message = "";
+    $link = "";
         
-        $match = GetUsers($Criteria);
+    $db = DbConnection::getInstance("localhost", "testdb", "root", "");
+    $userdb = UserDb::getInstance($db);
+    
+    $match = $userdb->getUsers($criteria);
                 
-        if(is_null($match))
-        {
-            // Doslo je do greske
+    if (!($match)) {
+        $link = "<a href='search.php'>ovde</a>";
+        $message = "Doslo je do greske. Probajte opet $link";
+    } else {
+        if ($match->isEmpty()) {
             $link = "<a href='search.php'>ovde</a>";
-            $message = "Doslo je do greske. Probajte opet $link";
-        }
-        else
-        {
-            if($match == "empty")
-            {
-                // Nema korisnika sa datim kriterijumom
-                $link = "<a href='search.php'>ovde</a>";
-                $message = "Nema korisnika sa datim kriterijumom. Probajte opet $link";
-            }
-            else
-            {
-                // $metch sadzi asocijativan niz u formi $metch['Email']="Name"
-                echo "<br />Pronadjeni su sledeci korisnici: <br /><br />";
+            $message = "Nema korisnika sa datim kriterijumom. Probajte opet $link";
+        } else {
+            // $metch sadzi asocijativan niz u formi $metch['Email']="Name"
+            echo "<br />Pronadjeni su sledeci korisnici: <br /><br />";
+            $table = new UserTable($match);
+            $table->show();         
                 
-                echo "<table><tr><th>Email</th><th>Ime</th>";
-                foreach($match as $tmpEmail => $tmpName)
-                {
-                    echo "<tr>";
-                        echo "<td>$tmpEmail</td>";
-                        echo "<td>$tmpName</td>";
-                    echo "</tr>";    
-                }
-                echo "</table>";
-                
-                $link = "<a href='search.php'>ovde</a>";
-                $message = "Zelite da probate opet?. Idite $link";
-            }
+            $link = "<a href='search.php'>ovde</a>";
+            $message = "Zelite da probate opet?. Idite $link";
         }
-        
-        echo "<br /><br />".$message;
-        
     }
-    
-
-
-
+    echo "<br /><br />".$message;
+}
 ?>

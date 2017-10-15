@@ -1,54 +1,46 @@
+LOGIN.PHP
 <?php
-    include "validate.inc";
-    include "testdb.inc";
-    session_start();
+require "users/validate.inc";
+require "users/userdb.inc";
+
+session_start();
     
-    if ($_SERVER["REQUEST_METHOD"] != "POST") 
-        {
-            // Nisu prosledjeni podaci pa korisnika treba vratiti na pocetnustranu
-            header("Location: home.php");
+if ($_SERVER["REQUEST_METHOD"] != "POST") {
+        header("Location: home.php");
+} else {
+    $email = $_POST['frmEmail'];
+    $password = $_POST['frmPassword'];
+    $message = "";
+    $link = "";
+            
+    // Zbog zloupotreba proveravamo $Email i $Password
+    if ((Validate::isEmail($email)) && Validate::isPassword($password)) {
+        $db = DbConnection::getInstance("localhost", "testdb", "root", "");
+        $userdb = UserDb::getInstance($db);
+             
+        if ($userdb->exists($email, $password)) {
+            $user = $userdb->find($email);
+            $name = $user->getName();
+            $_SESSION['aUser'] = $name;
+                                                   
+            $link = "<a href='home.php'>ovde</a>";
+            $message = "<br /><br />Dobro dosli $name";
+            $message .= "<br />Vratite se na pocetnu stranu $link"; 
+        } else {
+            $link = "<a href='home.php'>ovde</a>";
+            $message = "<br /><br />Pogresno korisnicko ime ili lozinka.";
+            $message .= "Probajte opet $link";
         }
-        else
-        {
-            // Prosledjeni su podaci korisnicko ime i sifra
-            $Email = $_POST['frmEmail'];
-            $Password = $_POST['frmPassword'];
-            
-            $message = "";
-            $link = "";
-            
-            // Zbog zloupotreba proveravamo $Email i $Password
-            if((IsEmail($Email)) && IsPassword($Password))
-            {
-                // Podaci su sigurni i pravilno uneti. Mozemo proveriti u bazi
-                if(UserExists($Email,$Password)== "IMA")
-                {
-                    // Korisnik postoji sa datom sifrom pa ga mozemo logovati
-                    $Name = GetNameFromEmail($Email);
-                    $_SESSION['aUser'] = $Name;
-                                       
-                    $link = "<a href='home.php'>ovde</a>";
-                    $message = "\nDobro dosli $Name";
-                    $message .= "\nVratite se na pocetnu stranu $link"; 
-                }
-                else
-                {
-                    // Podaci pogresno uneti. Ne postoji korisnik sa datim korisnickim imenom i sifrom
-                    $link = "<a href='home.php'>ovde</a>";
-                    $message = "Pogresno korisnicko ime ili lozinka. Probajte opet $link";
-                }
                 
-            }
-            else
-            {
-                // Podaci su pogresno uneti. Vratiti na pocetnu stranu
-                $link = "<a href='home.php'>ovde</a>";
-                $message = "Podaci nisu pravilno uneti. Probajte opet $link";
-            } // if((IsEmail($Email))...
+    } else {
+        // Podaci su pogresno uneti. Vratiti na pocetnu stranu
+        $link = "<a href='home.php'>ovde</a>";
+        $message = "<br /><br />Podaci nisu pravilno uneti. Probajte opet $link";
+    } // if((IsEmail($Email))...
             
-            echo $message ;
+    echo $message ;
             
-        }
+}
         
 
 
